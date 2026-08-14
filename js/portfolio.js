@@ -1,9 +1,8 @@
 /* =============================================================================
    LuxeVisuals — Portfolio auto-loader (category-aware)
 
-   Portfolio pieces live in three subfolders under /portfolio:
-     portfolio/ui/          UI design frames & clips
-     portfolio/scripting/   animation scripting clips
+   Portfolio pieces live in two subfolders under /portfolio:
+     portfolio/ui/          UI design frames & clips (including animation)
      portfolio/reviews/     client reviews
 
    Inside each folder, name files sequentially starting at 1:
@@ -13,9 +12,8 @@
 
    Which folder(s) get scanned is controlled by a ?cat= query param on
    portfolio.html:
-     portfolio.html            -> mixes all three categories together
+     portfolio.html            -> mixes both categories together
      portfolio.html?cat=ui     -> UI only
-     portfolio.html?cat=scripting -> Scripting only
      portfolio.html?cat=reviews   -> Client Reviews only
 
    NOTE: this relies on fetch() HEAD requests, which only work when the site
@@ -28,10 +26,9 @@
 (() => {
   const CATEGORIES = {
     ui: { folder: "portfolio/ui/", label: "UI", tag: "UI" },
-    scripting: { folder: "portfolio/scripting/", label: "Scripting", tag: "SCRIPT" },
     reviews: { folder: "portfolio/reviews/", label: "Client Reviews", tag: "REVIEW" },
   };
-  const CATEGORY_ORDER = ["ui", "scripting", "reviews"];
+  const CATEGORY_ORDER = ["ui", "reviews"];
 
   const HERO_COPY = {
     all: {
@@ -42,12 +39,7 @@
     ui: {
       title: "UI",
       eyebrow: "Selected Work — UI",
-      lede: "Finished UI frames and full interface redesigns. Click any piece to view it full screen.",
-    },
-    scripting: {
-      title: "Scripting",
-      eyebrow: "Selected Work — Scripting",
-      lede: "Scripted visual animations — tweens, transitions, and reveals. Click any piece to view it full screen.",
+      lede: "Finished UI frames, full interface redesigns, and scripted animation. Click any piece to view it full screen.",
     },
     reviews: {
       title: "Client Reviews",
@@ -240,7 +232,7 @@
     if (!found.length) {
       const folderHint =
         activeCat === "all"
-          ? "portfolio/ui, portfolio/scripting, or portfolio/reviews"
+          ? "portfolio/ui or portfolio/reviews"
           : CATEGORIES[activeCat].folder;
       grid.innerHTML = `
         <div class="portfolio-empty">
