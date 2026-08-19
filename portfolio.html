@@ -7,16 +7,19 @@
 <meta name="description" content="UI design and animation scripting work by LuxeVisuals.">
 <link rel="icon" type="image/png" href="assets/images/logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Manrope:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
+<div class="page-loader"><img src="assets/images/logo.png" width="58" height="58" alt="" decoding="async"></div>
 <div class="overlay-scrim"></div>
+<div class="cursor-glow"></div>
 
 <header class="topbar">
   <a class="brand" href="index.html">
-    <img class="brand-mark" src="assets/images/logo.png" alt="LuxeVisuals monogram">
+    <img class="brand-mark" src="assets/images/logo.png" width="46" height="46" decoding="async" alt="LuxeVisuals monogram">
     <span class="brand-name">LuxeVisuals<span>UI &amp; Scripting</span></span>
   </a>
   <button class="hamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
@@ -25,7 +28,7 @@
 <div class="shell">
   <aside class="sidebar">
     <a class="brand" href="index.html">
-      <img class="brand-mark" src="assets/images/logo.png" alt="LuxeVisuals monogram">
+      <img class="brand-mark" src="assets/images/logo.png" width="46" height="46" decoding="async" alt="LuxeVisuals monogram">
       <span class="brand-name">LuxeVisuals<span>UI &amp; Scripting</span></span>
     </a>
     <nav class="nav-links">
@@ -55,6 +58,15 @@
         <div class="seam" style="max-width:280px;"></div>
       </section>
 
+      <section class="quick-cta reveal">
+        <div class="quick-cta-inner">
+          <span>Like what you see?</span>
+          <div class="quick-cta-buttons">
+            <a class="btn" href="https://discord.gg/mc44DSwHMx" target="_blank" rel="noopener">Start a Project</a>
+          </div>
+        </div>
+      </section>
+
       <section>
         <div class="portfolio-grid" id="portfolio-grid">
           <!-- Populated automatically by js/portfolio.js from the /portfolio folder -->
@@ -70,8 +82,10 @@
   </main>
 </div>
 
+<div class="mini-cta"><a href="https://discord.gg/mc44DSwHMx" target="_blank" rel="noopener">Start a Project →</a></div>
+
 <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
-<script src="js/main.js"></script>
-<script src="js/portfolio.js"></script>
+<script src="js/main.js" defer></script>
+<script src="js/portfolio.js" defer></script>
 </body>
 </html>

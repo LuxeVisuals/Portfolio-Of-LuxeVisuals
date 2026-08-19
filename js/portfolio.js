@@ -16,6 +16,10 @@
      portfolio.html?cat=ui     -> UI only
      portfolio.html?cat=reviews   -> Client Reviews only
 
+   Switching category from the sidebar sub-nav happens in place (History API
+   + a short fade) instead of a full page reload — faster and avoids
+   re-fetching everything already on screen.
+
    NOTE: this relies on fetch() HEAD requests, which only work when the site
    is served over http(s) — e.g. GitHub Pages, or a local dev server such as
    `npx serve` / `python3 -m http.server`. Opening index.html directly from
@@ -51,15 +55,19 @@
   const EXTENSIONS = ["png", "jpg", "jpeg", "mp4"];
   const MAX_ITEMS = 300; // hard ceiling, just in case
   const MAX_CONSECUTIVE_MISSES = 3; // stop scanning after this many empty slots in a row
+  const FADE_MS = 220;
 
   const grid = document.getElementById("portfolio-grid");
   if (!grid) return;
 
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
   /* ---------------- Category resolution ---------------- */
 
+  const resolveCat = (raw) => (CATEGORIES[raw] ? raw : "all");
+
   const params = new URLSearchParams(location.search);
-  const requestedCat = params.get("cat");
-  const activeCat = CATEGORIES[requestedCat] ? requestedCat : "all";
+  let activeCat = resolveCat(params.get("cat"));
 
   applyHeroCopy(activeCat);
   markActiveSubNav(activeCat);
@@ -80,6 +88,41 @@
       const linkCat = new URL(a.href, location.href).searchParams.get("cat");
       a.classList.toggle("active", linkCat === cat);
     });
+  }
+
+  /* ---------------- In-place category switching ---------------- */
+
+  document.querySelectorAll(".nav-sub a").forEach((a) => {
+    a.addEventListener("click", (e) => {
+      const url = new URL(a.href, location.href);
+      if (url.pathname.split("/").pop() !== "portfolio.html") return; // not a same-page link, let it navigate normally
+      e.preventDefault();
+      const cat = resolveCat(url.searchParams.get("cat"));
+      switchCategory(cat, true);
+    });
+  });
+
+  window.addEventListener("popstate", () => {
+    const p = new URLSearchParams(location.search);
+    switchCategory(resolveCat(p.get("cat")), false);
+  });
+
+  function switchCategory(cat, pushHistory) {
+    if (cat === activeCat) return;
+    activeCat = cat;
+    if (pushHistory) {
+      const qs = cat === "all" ? "" : `?cat=${cat}`;
+      history.pushState({ cat }, "", `portfolio.html${qs}`);
+    }
+    applyHeroCopy(cat);
+    markActiveSubNav(cat);
+
+    if (reduceMotion) {
+      loadPortfolio(cat);
+      return;
+    }
+    grid.classList.add("fading");
+    setTimeout(() => loadPortfolio(cat), FADE_MS);
   }
 
   /* ---------------- Scanning ---------------- */
@@ -143,6 +186,7 @@
       media = document.createElement("img");
       media.src = item.url;
       media.loading = "lazy";
+      media.decoding = "async";
       media.alt = "";
     }
     tile.appendChild(media);
@@ -215,34 +259,36 @@
 
   /* ---------------- Load + render ---------------- */
 
-  async function loadPortfolio() {
+  let loadToken = 0;
+
+  async function loadPortfolio(cat) {
+    const token = ++loadToken;
     let found = [];
 
-    if (activeCat === "all") {
-      const results = await Promise.all(CATEGORY_ORDER.map((cat) => scanFolder(cat)));
-      CATEGORY_ORDER.forEach((cat, i) => {
-        found = found.concat(results[i]);
-      });
+    if (cat === "all") {
+      const results = await Promise.all(CATEGORY_ORDER.map((c) => scanFolder(c)));
+      CATEGORY_ORDER.forEach((c, i) => { found = found.concat(results[i]); });
     } else {
-      found = await scanFolder(activeCat);
+      found = await scanFolder(cat);
     }
+
+    if (token !== loadToken) return; // a newer category switch superseded this scan
 
     grid.innerHTML = "";
 
     if (!found.length) {
-      const folderHint =
-        activeCat === "all"
-          ? "portfolio/ui or portfolio/reviews"
-          : CATEGORIES[activeCat].folder;
+      const folderHint = cat === "all" ? "portfolio/ui or portfolio/reviews" : CATEGORIES[cat].folder;
       grid.innerHTML = `
         <div class="portfolio-empty">
           No work uploaded yet — drop numbered files (1.png, 2.mp4 …)
           into <code>${folderHint}</code> to populate this page.
         </div>`;
+      grid.classList.remove("fading");
       return;
     }
 
     found.forEach((item) => grid.appendChild(buildTile(item)));
+    grid.classList.remove("fading");
 
     if ("IntersectionObserver" in window) {
       const io = new IntersectionObserver(
@@ -268,5 +314,5 @@
       Scanning /portfolio …
     </div>`;
 
-  loadPortfolio();
+  loadPortfolio(activeCat);
 })();

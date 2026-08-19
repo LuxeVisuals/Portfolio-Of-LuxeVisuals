@@ -78,6 +78,105 @@ h1, h2, h3, h4 {
 ::-webkit-scrollbar-thumb { background: linear-gradient(var(--gold-deep), var(--gold)); border-radius: 6px; }
 
 /* ==========================================================================
+   Cursor glow — soft gold light that trails the pointer (desktop only)
+   ========================================================================== */
+
+.cursor-glow {
+  position: fixed;
+  top: 0; left: 0;
+  width: 460px; height: 460px;
+  margin-left: -230px; margin-top: -230px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(212, 175, 55, 0.09), transparent 68%);
+  pointer-events: none;
+  z-index: 4;
+  opacity: 0;
+  transform: translate3d(-500px, -500px, 0);
+  transition: opacity 0.5s var(--ease-out);
+  will-change: transform;
+}
+.cursor-glow.active { opacity: 1; }
+@media (pointer: coarse), (hover: none) { .cursor-glow { display: none; } }
+
+/* ==========================================================================
+   Page loader — brief entrance animation, shown once per session
+   ========================================================================== */
+
+.page-loader {
+  position: fixed; inset: 0; z-index: 3000;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--void-solid);
+  opacity: 1; visibility: visible;
+  transition: opacity 0.5s var(--ease-out), visibility 0.5s;
+}
+.page-loader img { width: 58px; height: 58px; animation: loader-pulse 1.15s ease-in-out infinite; filter: drop-shadow(0 0 18px rgba(212, 175, 55, 0.55)); }
+.page-loader.hide { opacity: 0; visibility: hidden; pointer-events: none; }
+@keyframes loader-pulse {
+  0%, 100% { transform: scale(0.9); opacity: 0.7; }
+  50% { transform: scale(1.06); opacity: 1; }
+}
+
+/* Page-to-page exit fade */
+body { opacity: 1; transition: opacity 0.32s var(--ease-out); }
+body.page-exit { opacity: 0; }
+
+/* ==========================================================================
+   Sticky mini-CTA — stays reachable once the hero scrolls out of view
+   ========================================================================== */
+
+.mini-cta {
+  position: fixed;
+  right: 28px; bottom: 28px;
+  z-index: 250;
+  transform: translateY(18px) scale(0.94);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.4s var(--ease-out), opacity 0.4s var(--ease-out);
+}
+.mini-cta.show { transform: translateY(0) scale(1); opacity: 1; pointer-events: auto; }
+.mini-cta a {
+  display: flex; align-items: center; gap: 9px;
+  padding: 14px 24px;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--void-solid);
+  background: linear-gradient(120deg, var(--gold-deep), var(--gold-bright));
+  clip-path: polygon(9px 0, 100% 0, 100% calc(100% - 9px), calc(100% - 9px) 100%, 0 100%, 0 9px);
+  box-shadow: 0 14px 34px -12px rgba(212, 175, 55, 0.55);
+  transition: transform 0.3s var(--ease-out), filter 0.3s;
+}
+.mini-cta a:hover { transform: translateY(-2px); filter: brightness(1.08); }
+@media (max-width: 640px) {
+  .mini-cta { right: 16px; bottom: 16px; }
+  .mini-cta a { padding: 12px 18px; font-size: 10px; }
+}
+
+/* ==========================================================================
+   Quick CTA strip — key action surfaced right under the page hero
+   ========================================================================== */
+
+.quick-cta { padding-bottom: 56px; }
+.quick-cta-inner {
+  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 18px;
+  padding: 24px 30px;
+  border: 1px solid var(--line);
+  background: linear-gradient(160deg, var(--ink) 0%, var(--ink-2) 100%);
+  clip-path: polygon(0 14px, 14px 0, calc(100% - 14px) 0, 100% 14px, 100% calc(100% - 14px), calc(100% - 14px) 100%, 14px 100%, 0 calc(100% - 14px));
+  transition: border-color 0.35s var(--ease-out);
+}
+.quick-cta-inner:hover { border-color: var(--line-bright); }
+.quick-cta-inner span { font-family: var(--font-display); font-size: 19px; color: var(--champagne); }
+.quick-cta-buttons { display: flex; gap: 14px; flex-wrap: wrap; }
+@media (max-width: 640px) {
+  .quick-cta-inner { flex-direction: column; align-items: flex-start; padding: 22px; }
+}
+
+/* Quick summary pills (TOS) */
+.quick-summary { display: flex; gap: 16px; flex-wrap: wrap; padding-bottom: 50px; }
+
+/* ==========================================================================
    Utility
    ========================================================================== */
 
@@ -303,10 +402,10 @@ section { padding: 0 0 100px; position: relative; }
 }
 .hero-home h1 { font-size: clamp(38px, 5vw, 64px); line-height: 1.05; }
 .hero-home .stat-row { display: flex; gap: 34px; margin-top: 34px; }
-.stat b { display: block; font-family: var(--font-display); font-size: 34px; color: var(--gold-bright); }
+.stat b { display: block; font-family: var(--font-display); font-size: 34px; color: var(--gold-bright); font-variant-numeric: tabular-nums; }
 .stat span { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--champagne-faint); }
 
-.hero-portrait { position: relative; justify-self: center; }
+.hero-portrait { position: relative; justify-self: center; will-change: transform; }
 .portrait-frame {
   width: 300px; height: 300px;
   padding: 10px;
@@ -426,7 +525,13 @@ section { padding: 0 0 100px; position: relative; }
    PORTFOLIO PAGE
    ========================================================================== */
 
-.portfolio-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+.portfolio-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 22px;
+  transition: opacity 0.28s var(--ease-out), transform 0.28s var(--ease-out);
+}
+.portfolio-grid.fading { opacity: 0; transform: translateY(10px); }
 .portfolio-item {
   position: relative;
   aspect-ratio: 16/10;
@@ -435,11 +540,28 @@ section { padding: 0 0 100px; position: relative; }
   clip-path: polygon(0 var(--edge), var(--edge) 0, 100% 0, 100% 100%, 0 100%, 0 100%);
   border: 1px solid var(--line);
   background: var(--ink);
-  transition: border-color 0.3s, transform 0.4s var(--ease-out);
+  transition: border-color 0.3s, transform 0.4s var(--ease-out), box-shadow 0.4s var(--ease-out);
 }
-.portfolio-item:hover { border-color: var(--line-bright); transform: translateY(-4px); }
-.portfolio-item img, .portfolio-item video { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s var(--ease-out), filter 0.4s; }
-.portfolio-item:hover img, .portfolio-item:hover video { transform: scale(1.06); filter: brightness(1.05); }
+/* Hover: the whole tile grows and lifts above its neighbours so nothing gets
+   visually clipped by the grid — media switches to "contain" so the full
+   image/video becomes visible without needing to open the lightbox. */
+.portfolio-item:hover {
+  border-color: var(--line-bright);
+  transform: scale(1.12) translateY(-4px);
+  z-index: 20;
+  box-shadow: 0 24px 60px -18px rgba(0, 0, 0, 0.6);
+}
+.portfolio-item img, .portfolio-item video {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transition: transform 0.5s var(--ease-out), filter 0.4s, object-fit 0s;
+  background: var(--ink);
+}
+.portfolio-item:hover img, .portfolio-item:hover video {
+  object-fit: contain;
+  filter: brightness(1.05);
+}
 .portfolio-item .overlay {
   position: absolute; inset: 0;
   display: flex; align-items: center; justify-content: center;
@@ -587,4 +709,12 @@ section { padding: 0 0 100px; position: relative; }
   .page-hero { padding: 44px 0 40px; }
   .hero-home { padding: 40px 0 50px; }
   .process-row { grid-template-columns: 46px 1fr; }
+  .portfolio-item:hover { transform: scale(1.06); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-loader { display: none; }
+  body { transition: none; }
+  .mini-cta, .quick-cta-inner, .cursor-glow { transition: none; }
+  .hero-portrait { transform: none !important; }
 }
