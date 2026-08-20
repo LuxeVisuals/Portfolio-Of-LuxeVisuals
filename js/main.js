@@ -1,6 +1,6 @@
-/* LuxeVisuals — shared site behaviour: mobile nav, active links, scroll
-   reveals, page loader, page transitions, cursor glow, sticky mini-CTA,
-   animated stat counters, profile parallax.
+/* LuxeVisuals — shared site behaviour: mobile nav, scroll-spy nav highlight,
+   scroll reveals, page loader, exit fade (for links off this page), cursor
+   glow, sticky mini-CTA, animated stat counters, profile parallax.
 
    Perf notes: all pointer/scroll work uses passive listeners and a single
    requestAnimationFrame loop (no per-event layout work), IntersectionObserver
@@ -10,39 +10,47 @@
 (() => {
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const finePointer = window.matchMedia("(pointer: fine)").matches;
-  const current = location.pathname.split("/").pop() || "index.html";
 
   document.addEventListener("DOMContentLoaded", () => {
-    /* ---- Active nav link (based on current file name) ---- */
-    document.querySelectorAll(".nav-link").forEach((link) => {
-      const href = (link.getAttribute("href") || "").split("?")[0];
-      if (href === current || (current === "" && href === "index.html")) {
-        link.classList.add("active");
-      }
-    });
-
-    /* ---- Portfolio sub-nav: expand when on portfolio.html ---- */
-    const portfolioSub = document.querySelector(".nav-sub");
-    if (portfolioSub && current === "portfolio.html") {
-      portfolioSub.classList.add("open");
-    }
-
-    /* ---- Mobile sidebar toggle ---- */
+    /* ---- Mobile nav toggle ---- */
     const hamburger = document.querySelector(".hamburger");
-    const sidebar = document.querySelector(".sidebar");
-    const scrim = document.querySelector(".overlay-scrim");
+    const navLinks = document.getElementById("nav-links");
 
     const closeMenu = () => {
-      sidebar?.classList.remove("open");
-      scrim?.classList.remove("open");
+      navLinks?.classList.remove("open");
+      hamburger?.setAttribute("aria-expanded", "false");
     };
 
     hamburger?.addEventListener("click", () => {
-      sidebar?.classList.toggle("open");
-      scrim?.classList.toggle("open");
+      const open = navLinks?.classList.toggle("open");
+      hamburger.setAttribute("aria-expanded", open ? "true" : "false");
     });
-    scrim?.addEventListener("click", closeMenu);
-    document.querySelectorAll(".nav-link").forEach((l) => l.addEventListener("click", closeMenu));
+    navLinks?.querySelectorAll(".nav-link").forEach((l) => l.addEventListener("click", closeMenu));
+    document.addEventListener("click", (e) => {
+      if (!navLinks?.classList.contains("open")) return;
+      if (navLinks.contains(e.target) || hamburger?.contains(e.target)) return;
+      closeMenu();
+    });
+
+    /* ---- Scroll-spy: highlight the nav link for the section in view ---- */
+    const sections = ["top", "portfolio", "commission"]
+      .map((id) => document.getElementById(id))
+      .filter(Boolean);
+    const navLinkFor = (id) => document.querySelector(`.nav-link[href="#${id}"]`);
+    if (sections.length && "IntersectionObserver" in window) {
+      const ioNav = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              document.querySelectorAll(".nav-link").forEach((l) => l.classList.remove("active"));
+              navLinkFor(entry.target.id)?.classList.add("active");
+            }
+          });
+        },
+        { threshold: 0, rootMargin: "-40% 0px -55% 0px" }
+      );
+      sections.forEach((s) => ioNav.observe(s));
+    }
 
     /* ---- Scroll reveal ---- */
     const revealEls = document.querySelectorAll(".reveal");
@@ -82,15 +90,15 @@
       }
     }
 
-    /* ---- Page-to-page exit fade on internal same-tab links ---- */
+    /* ---- Exit fade for links that leave this page (project pages, external) ----
+       Same-page anchors (#portfolio etc.) are left alone so native smooth
+       scrolling handles them. */
     if (!reduceMotion) {
       document.querySelectorAll("a[href]").forEach((a) => {
         const href = a.getAttribute("href");
         if (!href) return;
         if (a.target === "_blank" || href.startsWith("http") || href.startsWith("#") ||
             href.startsWith("mailto:") || href.startsWith("tel:")) return;
-        // On the portfolio page, category sub-nav links are handled in-place by portfolio.js
-        if (current === "portfolio.html" && a.closest(".nav-sub")) return;
 
         a.addEventListener("click", (e) => {
           e.preventDefault();
@@ -102,7 +110,7 @@
 
     /* ---- Sticky mini-CTA: hidden while the hero is in view ---- */
     const miniCta = document.querySelector(".mini-cta");
-    const hero = document.querySelector(".hero-home, .page-hero");
+    const hero = document.querySelector(".hero");
     if (miniCta && hero && "IntersectionObserver" in window) {
       const ioCta = new IntersectionObserver(
         (entries) => entries.forEach((entry) => miniCta.classList.toggle("show", !entry.isIntersecting)),
@@ -168,7 +176,7 @@
       requestAnimationFrame(loop);
     }
 
-    /* ---- Profile portrait parallax (home page only) ---- */
+    /* ---- Profile portrait parallax (desktop / fine-pointer only) ---- */
     const portrait = document.querySelector(".hero-portrait");
     if (portrait && finePointer && !reduceMotion) {
       let tx = 0, ty = 0, px = 0, py = 0;

@@ -1,10 +1,10 @@
-# LuxeVisuals — Portfolio Website
+# LuxeVisuals — Portfolio Landing Page
 
-A 5-page portfolio site (Home, Rules & TOS, Pricing, Portfolio, Contact) built
-with plain HTML/CSS/JS. The only build step is a small zero-dependency Node
-script that turns `/projects/` into pages — there's no framework, and you
-never run `npm install`. It's designed to be hosted for free on
-**GitHub Pages**.
+A single-page portfolio/landing site (Hero → Portfolio → Commission &amp; Contact)
+built with plain HTML/CSS/JS. The only build step is a small zero-dependency
+Node script that turns `/projects/` into portfolio cards and individual
+project pages — there's no framework, and you never run `npm install`. It's
+designed to be hosted for free on **GitHub Pages**.
 
 This README assumes you've never set up a GitHub repo before and walks
 through it from zero.
@@ -50,7 +50,7 @@ Open a terminal in this project folder and run:
 ```bash
 git init
 git add .
-git commit -m "Initial commit — LuxeVisuals portfolio"
+git commit -m "Initial commit — LuxeVisuals landing page"
 git branch -M main
 git remote add origin https://github.com/YOUR-USERNAME/YOUR-REPO-NAME.git
 git push -u origin main
@@ -62,10 +62,10 @@ Replace `YOUR-USERNAME` and `YOUR-REPO-NAME` with the values GitHub showed you i
 
 ## 5. Turn on GitHub Pages
 
-The site now has a small build step (it scans `/projects/` and generates
-pages before publishing), so Pages needs to be set to build from a
-**GitHub Actions workflow** rather than deploying a branch directly. The
-workflow file is already included at `.github/workflows/deploy.yml` — you
+The site has a small build step (it scans `/projects/` and generates the
+portfolio cards + project pages before publishing), so Pages needs to be set
+to build from a **GitHub Actions workflow** rather than deploying a branch
+directly. The workflow file lives at `.github/workflows/deploy.yml` — you
 just need to point Pages at it:
 
 1. In your repository on GitHub, go to **Settings** → **Pages** (in the left sidebar).
@@ -83,24 +83,25 @@ That's your live site. Every push to `main` re-runs the build and redeploys auto
 
 ## 6. Adding your real logo & profile picture
 
-The site currently ships with a gold "LV" monogram PNG as a placeholder for both the sidebar logo and the homepage profile picture. Swap in your real files:
+The site currently ships with a gold "LV" monogram PNG as a placeholder for both the header logo and the hero profile picture. Swap in your real files:
 
 1. Replace `assets/images/logo.png` with your actual logo image (keep the filename `logo.png`, or update the `src`/`href` attributes below if you rename it).
 2. Replace `assets/images/profile.png` with your real profile picture the same way.
-3. If you rename either file, update these in every HTML file:
+3. If you rename either file, update these in `index.html`:
    - `<link rel="icon" type="image/png" href="assets/images/logo.png">`
    - `<img class="brand-mark" src="assets/images/logo.png">`
-   - In `index.html`, `<img src="assets/images/profile.png" alt="LuxeVisuals profile">`
+   - `<img src="assets/images/profile.png" alt="LuxeVisuals profile">`
 4. Commit and push — the live site updates automatically.
 
-*(Tip: keep the profile picture roughly square — the homepage frame crops it to a square.)*
+*(Tip: keep the profile picture roughly square — the hero frame crops it to a square.)*
 
 ---
 
 ## 7. Adding a new project
 
-This is fully automatic — you never touch React, JavaScript, or any of the
-site's components. All you do is add a folder.
+This is fully automatic — you never touch HTML, CSS, or JavaScript. All you
+do is add a folder, and it appears in the Portfolio section of the landing
+page with its own dedicated page.
 
 Every project lives in its own folder under `/projects/`:
 
@@ -131,7 +132,7 @@ projects/
 4. Add a `project.json` file (see below).
 5. Commit and push to GitHub.
 6. Wait for the "Deploy to GitHub Pages" workflow to finish (check the **Actions** tab).
-7. The project automatically appears on the Portfolio page, with its own page at `/projects/<your-folder-name>/`.
+7. The project automatically appears in the Portfolio section on the landing page, with its own page at `/projects/<your-folder-name>/`.
 
 The easiest way to start a new one is to **duplicate `/projects/template-project/`**, rename the copy, swap out `01.png` for your real media, and edit `project.json`.
 
@@ -149,18 +150,20 @@ The easiest way to start a new one is to **duplicate `/projects/template-project
 - **description** — shown on the portfolio card and at the top of the project's page.
 - **longDescription** *(optional)* — a longer write-up shown further down the project page. Leave it out if the media should speak for itself.
 - **featured** *(optional)* — `true` adds a "Featured" tag to the card.
-- **order** *(optional)* — a number controlling where the card sits on the Portfolio page. Lower numbers come first. Projects without an `order` are placed after the ones that have it, sorted alphabetically by title.
+- **order** *(optional)* — a number controlling where the card sits in the Portfolio section. Lower numbers come first. Projects without an `order` are placed after the ones that have it, sorted alphabetically by title.
 - **thumbnail** *(optional)* — the filename of the media file to use as the card thumbnail (e.g. `"thumbnail": "03.jpg"`). If omitted, the first media file (alphabetical/numeric order) is used automatically.
 
 You do **not** need to list your media files anywhere — every image or video sitting in the folder is detected automatically and shown in that project's gallery.
+
+Clicking a project image or video opens it fullscreen in a lightbox (dark overlay, centered media, closes on the X button, clicking outside, or Escape).
 
 ---
 
 ## 8. Previewing locally before you push
 
-Because the Portfolio page and project pages are generated by the build
+Because the Portfolio section and project pages are generated by the build
 script, you need to run the build once before previewing — serving the raw
-repo folder will show empty project sections.
+repo folder will show an empty portfolio section.
 
 ```bash
 # 1. Build (only needs Node.js installed — no npm install required)
@@ -179,15 +182,12 @@ Then open the URL it gives you (e.g. `http://localhost:8000`) in your browser. R
 
 ```
 luxevisuals-portfolio/
-├── index.html              Home page
-├── tos.html                 Rules & TOS page
-├── pricing.html              Pricing page
-├── portfolio.html             Portfolio page (project grid — generated at build time)
-├── contact.html               Contact page
+├── index.html                Landing page — hero, portfolio (generated),
+│                                commission CTA, and contact links
 ├── css/
 │   └── style.css               All styling (colors, layout, animation)
 ├── js/
-│   ├── main.js                  Shared nav/menu/scroll-reveal behaviour
+│   ├── main.js                  Nav, scroll reveals, counters, page loader
 │   └── project-gallery.js        Lightbox for the gallery on project pages
 ├── assets/images/            Logo, profile picture
 ├── projects/
@@ -198,10 +198,12 @@ luxevisuals-portfolio/
 ├── templates/
 │   └── project-page.html        HTML template used to generate each project's page
 ├── scripts/
-│   └── build.js                  Build script — scans /projects/, generates pages
+│   └── build.js                  Build script — scans /projects/, generates cards + pages
 ├── .github/workflows/
 │   └── deploy.yml                 GitHub Actions: builds and deploys to Pages
+├── CNAME
 ├── LICENSE
+├── sitemap.xml
 └── README.md                       You are here
 ```
 
@@ -209,22 +211,22 @@ luxevisuals-portfolio/
 
 ---
 
-## 10. Updating text (pricing, TOS, socials, etc.)
+## 10. Updating text (hero copy, links, etc.)
 
-Everything is plain HTML — open the relevant page in a code editor and edit the text directly:
+Everything is plain HTML in a single file — open `index.html` in a code editor and edit the text directly:
 
-- **Pricing** → `pricing.html`
-- **Rules & TOS** → `tos.html`
-- **Social links** → `contact.html` (and the footer of every page)
-- **Bio / capabilities / stats** → `index.html`
+- **Hero headline &amp; intro** → the `#top` section near the top of `index.html`
+- **Services strip** → the three `.cap-card` blocks just below the hero
+- **Portfolio intro copy** → the `#portfolio` section head
+- **Commission CTA &amp; social links** (Discord server, Discord DM, X, Roblox) → the `#commission` section, and mirrored in the footer
 
-There's no CMS or database — editing the `.html` files and pushing to GitHub is the whole workflow.
+There's no CMS or database — editing `index.html` and pushing to GitHub is the whole workflow.
 
 ---
 
 ## 11. A note on custom domains (optional)
 
-If you'd like `luxevisuals.com` (or similar) instead of the `github.io` URL:
+If you'd like `luxevisuals.site` (or similar) instead of the `github.io` URL:
 
 1. Buy a domain from any registrar (Namecheap, Cloudflare, Google Domains successor, etc.).
 2. In your repo's **Settings → Pages**, add it under **Custom domain**.
