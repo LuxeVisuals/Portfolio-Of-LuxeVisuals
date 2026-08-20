@@ -1,8 +1,10 @@
 # LuxeVisuals — Portfolio Website
 
 A 5-page portfolio site (Home, Rules & TOS, Pricing, Portfolio, Contact) built
-with plain HTML/CSS/JS — no build tools, no framework, no npm install. It's
-designed to be hosted for free on **GitHub Pages**.
+with plain HTML/CSS/JS. The only build step is a small zero-dependency Node
+script that turns `/projects/` into pages — there's no framework, and you
+never run `npm install`. It's designed to be hosted for free on
+**GitHub Pages**.
 
 This README assumes you've never set up a GitHub repo before and walks
 through it from zero.
@@ -14,7 +16,7 @@ through it from zero.
 - A [GitHub account](https://github.com/join) (free)
 - [Git](https://git-scm.com/downloads) installed on your computer
 - A code editor — [VS Code](https://code.visualstudio.com/) is a good free option
-- (Optional, for local preview) [Node.js](https://nodejs.org/) or Python, either works
+- (Optional, for local preview) [Node.js](https://nodejs.org/)
 
 ---
 
@@ -60,16 +62,22 @@ Replace `YOUR-USERNAME` and `YOUR-REPO-NAME` with the values GitHub showed you i
 
 ## 5. Turn on GitHub Pages
 
+The site now has a small build step (it scans `/projects/` and generates
+pages before publishing), so Pages needs to be set to build from a
+**GitHub Actions workflow** rather than deploying a branch directly. The
+workflow file is already included at `.github/workflows/deploy.yml` — you
+just need to point Pages at it:
+
 1. In your repository on GitHub, go to **Settings** → **Pages** (in the left sidebar).
-2. Under **Build and deployment → Source**, choose **Deploy from a branch**.
-3. Under **Branch**, select `main` and folder `/ (root)`, then **Save**.
-4. Wait a minute or two, then refresh — GitHub will show a green box with your live URL, something like:
+2. Under **Build and deployment → Source**, choose **GitHub Actions**.
+3. Push a commit (or go to the **Actions** tab and re-run the workflow) — the "Deploy to GitHub Pages" workflow will run automatically.
+4. Once it finishes (usually under a minute), refresh the Pages settings screen — GitHub will show a green box with your live URL, something like:
 
 ```
 https://YOUR-USERNAME.github.io/YOUR-REPO-NAME/
 ```
 
-That's your live portfolio. Any time you push new commits to `main`, the site updates automatically within a minute or so.
+That's your live site. Every push to `main` re-runs the build and redeploys automatically — you can watch progress under the **Actions** tab.
 
 ---
 
@@ -89,42 +97,81 @@ The site currently ships with a gold "LV" monogram PNG as a placeholder for both
 
 ---
 
-## 7. Adding portfolio work
+## 7. Adding a new project
 
-This is fully automatic. The Portfolio page is split into three categories, each with its own folder:
+This is fully automatic — you never touch React, JavaScript, or any of the
+site's components. All you do is add a folder.
 
+Every project lives in its own folder under `/projects/`:
+
+```text
+projects/
+    lumberbound/
+        01.png
+        02.png
+        03.mp4
+        project.json
+
+    fishing/
+        01.jpg
+        02.png
+        03.mp4
+        project.json
+
+    template-project/          ← ships with the site, a starting point
+        01.png
+        project.json
 ```
-portfolio/ui/          UI design frames & clips
-portfolio/scripting/   animation scripting clips
-portfolio/reviews/     client reviews
+
+**To add a project:**
+
+1. Go to `/projects/`.
+2. Create a new folder (its name becomes the project's URL, e.g. `projects/lumberbound/` → `yoursite.com/projects/lumberbound/`).
+3. Drop in your images (`.png`, `.jpg`, `.jpeg`, `.webp`) and/or videos (`.mp4`, `.webm`) — name them anything, there's no fixed count and no fixed naming pattern required.
+4. Add a `project.json` file (see below).
+5. Commit and push to GitHub.
+6. Wait for the "Deploy to GitHub Pages" workflow to finish (check the **Actions** tab).
+7. The project automatically appears on the Portfolio page, with its own page at `/projects/<your-folder-name>/`.
+
+The easiest way to start a new one is to **duplicate `/projects/template-project/`**, rename the copy, swap out `01.png` for your real media, and edit `project.json`.
+
+### `project.json`
+
+```json
+{
+  "title": "Lumberbound",
+  "description": "Premium UI system designed for a progression-based lumber simulator.",
+  "featured": true
+}
 ```
 
-For each category:
+- **title** — required.
+- **description** — shown on the portfolio card and at the top of the project's page.
+- **longDescription** *(optional)* — a longer write-up shown further down the project page. Leave it out if the media should speak for itself.
+- **featured** *(optional)* — `true` adds a "Featured" tag to the card.
+- **order** *(optional)* — a number controlling where the card sits on the Portfolio page. Lower numbers come first. Projects without an `order` are placed after the ones that have it, sorted alphabetically by title.
+- **thumbnail** *(optional)* — the filename of the media file to use as the card thumbnail (e.g. `"thumbnail": "03.jpg"`). If omitted, the first media file (alphabetical/numeric order) is used automatically.
 
-1. Export your finished pieces as `.png`, `.jpg`, `.jpeg` (images) or `.mp4` (video).
-2. Name them in order starting at `1`: `1.png`, `2.mp4`, `3.jpg`...
-3. Drop them into the matching subfolder above.
-4. Commit and push. The Portfolio page scans the folders automatically — no editing of HTML or JS required.
-
-The sidebar's Portfolio nav item expands into UI / Scripting / Client Reviews sub-links (`portfolio.html?cat=ui`, `?cat=scripting`, `?cat=reviews`). Visiting `portfolio.html` with no `?cat=` shows everything mixed together.
-
-**Important:** the auto-detection works by asking the server "does this file exist?", which only works when the site is actually served over `http(s)` — i.e. on GitHub Pages, or a local dev server (see below). Double-clicking `index.html` to open it directly from your file explorer will *not* be able to scan the folder, because browsers block that kind of request for local files.
+You do **not** need to list your media files anywhere — every image or video sitting in the folder is detected automatically and shown in that project's gallery.
 
 ---
 
 ## 8. Previewing locally before you push
 
-To see your changes before pushing, run a tiny local server from the project folder (either works, pick whichever you have installed):
+Because the Portfolio page and project pages are generated by the build
+script, you need to run the build once before previewing — serving the raw
+repo folder will show empty project sections.
 
 ```bash
-# Option A — Node.js
-npx serve .
+# 1. Build (only needs Node.js installed — no npm install required)
+node scripts/build.js
 
-# Option B — Python 3
-python3 -m http.server 8000
+# 2. Serve the generated /_site folder
+npx serve _site
+# or: python3 -m http.server 8000 --directory _site
 ```
 
-Then open the URL it gives you (e.g. `http://localhost:8000`) in your browser.
+Then open the URL it gives you (e.g. `http://localhost:8000`) in your browser. Re-run `node scripts/build.js` any time you change something in `/projects/` and want to see it locally.
 
 ---
 
@@ -132,24 +179,33 @@ Then open the URL it gives you (e.g. `http://localhost:8000`) in your browser.
 
 ```
 luxevisuals-portfolio/
-├── index.html          Home page
-├── tos.html             Rules & TOS page
-├── pricing.html          Pricing page
-├── portfolio.html        Portfolio page (auto-loading grid)
-├── contact.html          Contact page
+├── index.html              Home page
+├── tos.html                 Rules & TOS page
+├── pricing.html              Pricing page
+├── portfolio.html             Portfolio page (project grid — generated at build time)
+├── contact.html               Contact page
 ├── css/
-│   └── style.css         All styling (colors, layout, animation)
+│   └── style.css               All styling (colors, layout, animation)
 ├── js/
-│   ├── main.js           Shared nav/menu/scroll-reveal behaviour
-│   └── portfolio.js      Auto-scans /portfolio and builds the grid + lightbox
-├── assets/images/        Logo, profile picture
-├── portfolio/
-│   ├── ui/                Numbered UI work (1.png, 2.mp4, ...)
-│   ├── scripting/          Numbered scripting work
-│   └── reviews/            Numbered client reviews
+│   ├── main.js                  Shared nav/menu/scroll-reveal behaviour
+│   └── project-gallery.js        Lightbox for the gallery on project pages
+├── assets/images/            Logo, profile picture
+├── projects/
+│   ├── template-project/       Starting point — duplicate this to add a project
+│   │   ├── 01.png
+│   │   └── project.json
+│   └── <your-project>/          Each project = one folder + project.json
+├── templates/
+│   └── project-page.html        HTML template used to generate each project's page
+├── scripts/
+│   └── build.js                  Build script — scans /projects/, generates pages
+├── .github/workflows/
+│   └── deploy.yml                 GitHub Actions: builds and deploys to Pages
 ├── LICENSE
-└── README.md              You are here
+└── README.md                       You are here
 ```
+
+`_site/` is the generated output folder — it's git-ignored and gets rebuilt automatically by GitHub Actions on every push, so you never commit it.
 
 ---
 
@@ -173,5 +229,7 @@ If you'd like `luxevisuals.com` (or similar) instead of the `github.io` URL:
 1. Buy a domain from any registrar (Namecheap, Cloudflare, Google Domains successor, etc.).
 2. In your repo's **Settings → Pages**, add it under **Custom domain**.
 3. In your domain registrar's DNS settings, add a `CNAME` record pointing to `YOUR-USERNAME.github.io`.
+
+The `CNAME` file in this repo's root already handles the GitHub Pages side of this — just update its contents with your domain if it changes.
 
 GitHub's own guide covers this in more depth: https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site
