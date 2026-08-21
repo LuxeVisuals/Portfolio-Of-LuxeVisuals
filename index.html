@@ -25,13 +25,19 @@
 
   music.volume = 0.35;
 
-  // Try autoplay immediately.
+  // Restore the previous position
+  const savedTime = sessionStorage.getItem("musicTime");
+
+  if (savedTime) {
+    music.currentTime = parseFloat(savedTime);
+  }
+
+  // Try to autoplay
   music.play().catch(() => {
-    // Browser blocked autoplay.
-    // Start music on the user's first interaction.
+
     const startMusic = () => {
       music.play().catch(() => {});
-      
+
       document.removeEventListener("click", startMusic);
       document.removeEventListener("keydown", startMusic);
       document.removeEventListener("touchstart", startMusic);
@@ -40,6 +46,24 @@
     document.addEventListener("click", startMusic);
     document.addEventListener("keydown", startMusic);
     document.addEventListener("touchstart", startMusic);
+  });
+
+  // Save position while the user is on the page
+  setInterval(() => {
+    if (!music.paused) {
+      sessionStorage.setItem(
+        "musicTime",
+        music.currentTime
+      );
+    }
+  }, 500);
+
+  // Save immediately before leaving
+  window.addEventListener("beforeunload", () => {
+    sessionStorage.setItem(
+      "musicTime",
+      music.currentTime
+    );
   });
 </script>
 
