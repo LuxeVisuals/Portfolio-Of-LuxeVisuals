@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>
+    Voice of Chaos
+    — LuxeVisuals
+  </title>
+
+  <meta
+    name="description"
+    content="This is a mic type of game on Roblox"
+  >
+
+  <link
+    rel="stylesheet"
+    href="../../css/style.css"
+  >
+<audio
+  id="background-music"
+  src="../../assets/audio/background.mp3"
+  loop
+  preload="auto">
+</audio>
+
+<script>
+  const music = document.getElementById("background-music");
+
+  music.volume = 0.35;
+
+  const savedTime = sessionStorage.getItem("musicTime");
+
+  if (savedTime) {
+    music.addEventListener("loadedmetadata", () => {
+      music.currentTime = parseFloat(savedTime);
+    }, { once: true });
+  }
+
+  music.play().catch(() => {
+
+    const startMusic = () => {
+      music.play().catch(() => {});
+
+      document.removeEventListener("click", startMusic);
+      document.removeEventListener("keydown", startMusic);
+      document.removeEventListener("touchstart", startMusic);
+    };
+
+    document.addEventListener("click", startMusic);
+    document.addEventListener("keydown", startMusic);
+    document.addEventListener("touchstart", startMusic);
+  });
+
+  setInterval(() => {
+    if (!music.paused) {
+      sessionStorage.setItem(
+        "musicTime",
+        music.currentTime
+      );
+    }
+  }, 500);
+
+  window.addEventListener("beforeunload", () => {
+    sessionStorage.setItem(
+      "musicTime",
+      music.currentTime
+    );
+  });
+</script>
+  <style>
+
+    body {
+      min-height: 100vh;
+    }
+
+    .project-page {
+      padding-top: 40px;
+    }
+
+    .project-header {
+      max-width: 760px;
+      margin-bottom: 45px;
+    }
+
+    .project-header h1 {
+      font-size: clamp(38px, 5vw, 62px);
+      margin-top: 14px;
+    }
+
+    .project-description {
+      color: var(--champagne-dim);
+      font-size: 16px;
+      max-width: 650px;
+    }
+
+    #project-gallery {
+      display: grid;
+      grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+      gap: 22px;
+    }
+
+    .portfolio-item {
+      position: relative;
+      display: block;
+      width: 100%;
+      padding: 0;
+      overflow: hidden;
+      background: var(--ink);
+      border: 1px solid var(--line);
+      cursor: pointer;
+      transition:
+        transform 0.35s var(--ease-out),
+        border-color 0.35s var(--ease-out),
+        box-shadow 0.35s var(--ease-out);
+    }
+
+    .portfolio-item:hover {
+      transform: translateY(-3px);
+      border-color: var(--line-bright);
+      box-shadow:
+        0 18px 50px -20px
+        rgba(205, 164, 78, 0.35);
+    }
+
+    .portfolio-item img,
+    .portfolio-item video {
+      display: block;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 16 / 10;
+      object-fit: cover;
+      transition:
+        transform 0.5s var(--ease-out);
+    }
+
+    .portfolio-item:hover img,
+    .portfolio-item:hover video {
+      transform: scale(1.035);
+    }
+
+    @media (max-width: 640px) {
+
+      #project-gallery {
+        grid-template-columns: 1fr;
+      }
+
+    }
+
+  </style>
+
+</head>
+
+
+<body>
+
+  <div class="container">
+
+    <main class="project-page">
+
+      <a
+        class="back-link"
+        href="../../index.html"
+      >
+        ← Back to Portfolio
+      </a>
+
+
+      <header class="project-header">
+
+        <span class="eyebrow">
+          Selected Work
+        </span>
+
+        <h1>
+          Voice of Chaos
+        </h1>
+
+        <p class="project-description">
+          This is a mic type of game on Roblox
+        </p>
+
+      </header>
+
+
+      <section
+        id="project-gallery"
+        aria-label="Voice of Chaos gallery"
+      >
+
+        
+        <button
+          class="portfolio-item"
+          type="button"
+          data-type="image"
+          data-src="IndexUI.png"
+          aria-label="Open IndexUI.png">
+
+          
+                <img
+                  src="IndexUI.png"
+                  alt=""
+                  loading="lazy"
+                  decoding="async">
+              
+
+        </button>
+      
+
+        <button
+          class="portfolio-item"
+          type="button"
+          data-type="image"
+          data-src="LobbyUI.png"
+          aria-label="Open LobbyUI.png">
+
+          
+                <img
+                  src="LobbyUI.png"
+                  alt=""
+                  loading="lazy"
+                  decoding="async">
+              
+
+        </button>
+      
+
+        <button
+          class="portfolio-item"
+          type="button"
+          data-type="image"
+          data-src="MatchUI.png"
+          aria-label="Open MatchUI.png">
+
+          
+                <img
+                  src="MatchUI.png"
+                  alt=""
+                  loading="lazy"
+                  decoding="async">
+              
+
+        </button>
+      
+
+        <button
+          class="portfolio-item"
+          type="button"
+          data-type="image"
+          data-src="ReportUI.png"
+          aria-label="Open ReportUI.png">
+
+          
+                <img
+                  src="ReportUI.png"
+                  alt=""
+                  loading="lazy"
+                  decoding="async">
+              
+
+        </button>
+      
+
+        <button
+          class="portfolio-item"
+          type="button"
+          data-type="image"
+          data-src="ShopUI.png"
+          aria-label="Open ShopUI.png">
+
+          
+                <img
+                  src="ShopUI.png"
+                  alt=""
+                  loading="lazy"
+                  decoding="async">
+              
+
+        </button>
+      
+
+        <button
+          class="portfolio-item"
+          type="button"
+          data-type="image"
+          data-src="StatsUI.png"
+          aria-label="Open StatsUI.png">
+
+          
+                <img
+                  src="StatsUI.png"
+                  alt=""
+                  loading="lazy"
+                  decoding="async">
+              
+
+        </button>
+      
+
+      </section>
+
+    </main>
+
+
+    <footer class="site-footer">
+
+      <span>
+        © 2026
+        LuxeVisuals
+      </span>
+
+      <span>
+        <a href="../../index.html">
+          Portfolio
+        </a>
+      </span>
+
+    </footer>
+
+  </div>
+
+
+  <script
+    src="../../js/project-gallery.js"
+    defer
+  ></script>
+
+</body>
+
+</html>
