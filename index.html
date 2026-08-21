@@ -13,6 +13,38 @@
 </head>
 <body>
 
+  <audio
+  id="background-music"
+  src="assets/audio/background.mp3"
+  loop
+  preload="auto">
+</audio>
+
+<script>
+  const music = document.getElementById("background-music");
+
+  music.volume = 0.35;
+
+  // Try autoplay immediately.
+  music.play().catch(() => {
+    // Browser blocked autoplay.
+    // Start music on the user's first interaction.
+    const startMusic = () => {
+      music.play().catch(() => {});
+      
+      document.removeEventListener("click", startMusic);
+      document.removeEventListener("keydown", startMusic);
+      document.removeEventListener("touchstart", startMusic);
+    };
+
+    document.addEventListener("click", startMusic);
+    document.addEventListener("keydown", startMusic);
+    document.addEventListener("touchstart", startMusic);
+  });
+</script>
+
+<script src="js/main.js" defer></script>
+
 <div class="page-loader"><img src="assets/images/logo.png" width="58" height="58" alt="" decoding="async"></div>
 <div class="cursor-glow"></div>
 
