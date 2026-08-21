@@ -25,7 +25,57 @@
     rel="stylesheet"
     href="../../css/style.css"
   >
+<audio
+  id="background-music"
+  src="../../assets/audio/background.mp3"
+  loop
+  preload="auto">
+</audio>
 
+<script>
+  const music = document.getElementById("background-music");
+
+  music.volume = 0.35;
+
+  const savedTime = sessionStorage.getItem("musicTime");
+
+  if (savedTime) {
+    music.addEventListener("loadedmetadata", () => {
+      music.currentTime = parseFloat(savedTime);
+    }, { once: true });
+  }
+
+  music.play().catch(() => {
+
+    const startMusic = () => {
+      music.play().catch(() => {});
+
+      document.removeEventListener("click", startMusic);
+      document.removeEventListener("keydown", startMusic);
+      document.removeEventListener("touchstart", startMusic);
+    };
+
+    document.addEventListener("click", startMusic);
+    document.addEventListener("keydown", startMusic);
+    document.addEventListener("touchstart", startMusic);
+  });
+
+  setInterval(() => {
+    if (!music.paused) {
+      sessionStorage.setItem(
+        "musicTime",
+        music.currentTime
+      );
+    }
+  }, 500);
+
+  window.addEventListener("beforeunload", () => {
+    sessionStorage.setItem(
+      "musicTime",
+      music.currentTime
+    );
+  });
+</script>
   <style>
 
     body {
