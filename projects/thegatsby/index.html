@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>
+    The Gatsby
+    — LuxeVisuals
+  </title>
+
+  <meta
+    name="description"
+    content="A social club where you can work, play pool and Connect Four, and socialize with people around you — I designed the UI for this game."
+  >
+
+  <link
+    rel="stylesheet"
+    href="../../css/style.css"
+  >
+
+  <style>
+
+    body {
+      min-height: 100vh;
+    }
+
+    .project-page {
+      padding-top: 40px;
+    }
+
+    .project-header {
+      max-width: 760px;
+      margin-bottom: 45px;
+    }
+
+    .project-header h1 {
+      font-size: clamp(38px, 5vw, 62px);
+      margin-top: 14px;
+    }
+
+    .project-description {
+      color: var(--champagne-dim);
+      font-size: 16px;
+      max-width: 650px;
+    }
+
+    #project-gallery {
+      display: grid;
+      grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+      gap: 22px;
+    }
+
+    .portfolio-item {
+      position: relative;
+      display: block;
+      width: 100%;
+      padding: 0;
+      overflow: hidden;
+      background: var(--ink);
+      border: 1px solid var(--line);
+      cursor: pointer;
+      transition:
+        transform 0.35s var(--ease-out),
+        border-color 0.35s var(--ease-out),
+        box-shadow 0.35s var(--ease-out);
+    }
+
+    .portfolio-item:hover {
+      transform: translateY(-3px);
+      border-color: var(--line-bright);
+      box-shadow:
+        0 18px 50px -20px
+        rgba(205, 164, 78, 0.35);
+    }
+
+    .portfolio-item img,
+    .portfolio-item video {
+      display: block;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 16 / 10;
+      object-fit: cover;
+      transition:
+        transform 0.5s var(--ease-out);
+    }
+
+    .portfolio-item:hover img,
+    .portfolio-item:hover video {
+      transform: scale(1.035);
+    }
+
+    @media (max-width: 640px) {
+
+      #project-gallery {
+        grid-template-columns: 1fr;
+      }
+
+    }
+
+  </style>
+
+</head>
+
+
+<body>
+
+  <div class="container">
+
+    <main class="project-page">
+
+      <a
+        class="back-link"
+        href="../../index.html"
+      >
+        ← Back to Portfolio
+      </a>
+
+
+      <header class="project-header">
+
+        <span class="eyebrow">
+          Selected Work
+        </span>
+
+        <h1>
+          The Gatsby
+        </h1>
+
+        <p class="project-description">
+          A social club where you can work, play pool and Connect Four, and socialize with people around you — I designed the UI for this game.
+        </p>
+
+      </header>
+
+
+      <section
+        id="project-gallery"
+        aria-label="The Gatsby gallery"
+      >
+
+        
+        <button
+          class="portfolio-item"
+          type="button"
+          data-type="image"
+          data-src="Contributors.png"
+          aria-label="Open Contributors.png">
+
+          
+                <img
+                  src="Contributors.png"
+                  alt=""
+                  loading="lazy"
+                  decoding="async">
+              
+
+        </button>
+      
+
+        <button
+          class="portfolio-item"
+          type="button"
+          data-type="image"
+          data-src="Emotes.png"
+          aria-label="Open Emotes.png">
+
+          
+                <img
+                  src="Emotes.png"
+                  alt=""
+                  loading="lazy"
+                  decoding="async">
+              
+
+        </button>
+      
+
+        <button
+          class="portfolio-item"
+          type="button"
+          data-type="image"
+          data-src="Gamepasses.png"
+          aria-label="Open Gamepasses.png">
+
+          
+                <img
+                  src="Gamepasses.png"
+                  alt=""
+                  loading="lazy"
+                  decoding="async">
+              
+
+        </button>
+      
+
+        <button
+          class="portfolio-item"
+          type="button"
+          data-type="image"
+          data-src="HowToPlay.png"
+          aria-label="Open HowToPlay.png">
+
+          
+                <img
+                  src="HowToPlay.png"
+                  alt=""
+                  loading="lazy"
+                  decoding="async">
+              
+
+        </button>
+      
+
+        <button
+          class="portfolio-item"
+          type="button"
+          data-type="image"
+          data-src="Hud.png"
+          aria-label="Open Hud.png">
+
+          
+                <img
+                  src="Hud.png"
+                  alt=""
+                  loading="lazy"
+                  decoding="async">
+              
+
+        </button>
+      
+
+        <button
+          class="portfolio-item"
+          type="button"
+          data-type="image"
+          data-src="MainMenu.png"
+          aria-label="Open MainMenu.png">
+
+          
+                <img
+                  src="MainMenu.png"
+                  alt=""
+                  loading="lazy"
+                  decoding="async">
+              
+
+        </button>
+      
+
+        <button
+          class="portfolio-item"
+          type="button"
+          data-type="image"
+          data-src="NameTag.png"
+          aria-label="Open NameTag.png">
+
+          
+                <img
+                  src="NameTag.png"
+                  alt=""
+                  loading="lazy"
+                  decoding="async">
+              
+
+        </button>
+      
+
+        <button
+          class="portfolio-item"
+          type="button"
+          data-type="image"
+          data-src="OderMenu.png"
+          aria-label="Open OderMenu.png">
+
+          
+                <img
+                  src="OderMenu.png"
+                  alt=""
+                  loading="lazy"
+                  decoding="async">
+              
+
+        </button>
+      
+
+        <button
+          class="portfolio-item"
+          type="button"
+          data-type="image"
+          data-src="Rules.png"
+          aria-label="Open Rules.png">
+
+          
+                <img
+                  src="Rules.png"
+                  alt=""
+                  loading="lazy"
+                  decoding="async">
+              
+
+        </button>
+      
+
+        <button
+          class="portfolio-item"
+          type="button"
+          data-type="image"
+          data-src="Settings.png"
+          aria-label="Open Settings.png">
+
+          
+                <img
+                  src="Settings.png"
+                  alt=""
+                  loading="lazy"
+                  decoding="async">
+              
+
+        </button>
+      
+
+        <button
+          class="portfolio-item"
+          type="button"
+          data-type="image"
+          data-src="SettingsList.png"
+          aria-label="Open SettingsList.png">
+
+          
+                <img
+                  src="SettingsList.png"
+                  alt=""
+                  loading="lazy"
+                  decoding="async">
+              
+
+        </button>
+      
+
+      </section>
+
+    </main>
+
+
+    <footer class="site-footer">
+
+      <span>
+        © 2026
+        LuxeVisuals
+      </span>
+
+      <span>
+        <a href="../../index.html">
+          Portfolio
+        </a>
+      </span>
+
+    </footer>
+
+  </div>
+
+
+  <script
+    src="../../js/project-gallery.js"
+    defer
+  ></script>
+
+</body>
+
+</html>
